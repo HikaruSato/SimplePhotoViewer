@@ -1,0 +1,19 @@
+PODS:
+  - RMPZoomTransitionAnimator (1.0.2)
+
+DEPENDENCIES:
+  - RMPZoomTransitionAnimator (from `https://github.com/HIkaruSato/RMPZoomTransitionAnimator.git`)
+
+EXTERNAL SOURCES:
+  RMPZoomTransitionAnimator:
+    :git: https://github.com/HIkaruSato/RMPZoomTransitionAnimator.git
+
+CHECKOUT OPTIONS:
+  RMPZoomTransitionAnimator:
+    :commit: d3332b9401ba454f83f72c5dc64a728e57c7d2d2
+    :git: https://github.com/HIkaruSato/RMPZoomTransitionAnimator.git
+
+SPEC CHECKSUMS:
+  RMPZoomTransitionAnimator: fa1a0726e8e227069d9d63d30ef403aa12323960
+
+COCOAPODS: 0.39.0
