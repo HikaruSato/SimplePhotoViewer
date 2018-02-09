@@ -9,6 +9,6 @@
 #ifndef PhotoViewer_Bridging_Header_h
 #define PhotoViewer_Bridging_Header_h
 
-#import "RMPZoomTransitionAnimator.h"
+@import RMPZoomTransitionAnimator;
 
 #endif /* PhotoViewer_Bridging_Header_h */

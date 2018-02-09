@@ -17,28 +17,30 @@ class SinglePhotoViewController: UIViewController,UIScrollViewDelegate {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		let doubleTapRecognizer = UITapGestureRecognizer(target:self, action:#selector(SinglePhotoViewController.scrollViewDoubleTapped(_:)));
-		doubleTapRecognizer.numberOfTapsRequired = 2;
-		doubleTapRecognizer.numberOfTouchesRequired = 1;
-		self.scrollView.addGestureRecognizer(doubleTapRecognizer);
+		let doubleTapRecognizer = UITapGestureRecognizer(target:self, action:#selector(SinglePhotoViewController.scrollViewDoubleTapped(recognizer:)))
+		doubleTapRecognizer.numberOfTapsRequired = 2
+		doubleTapRecognizer.numberOfTouchesRequired = 1
+        doubleTapRecognizer.delegate = self
+		self.scrollView.addGestureRecognizer(doubleTapRecognizer)
 		
-		let twoFingerTapRecognizer = UITapGestureRecognizer(target:self, action:#selector(SinglePhotoViewController.scrollViewTwoFingerTapped(_:)));
-		twoFingerTapRecognizer.numberOfTapsRequired = 1;
-		twoFingerTapRecognizer.numberOfTouchesRequired = 2;
-		self.scrollView.addGestureRecognizer(twoFingerTapRecognizer);
-		self.showImage(photoImage)
+		let twoFingerTapRecognizer = UITapGestureRecognizer(target:self, action:#selector(SinglePhotoViewController.scrollViewTwoFingerTapped(recognizer:)))
+		twoFingerTapRecognizer.numberOfTapsRequired = 1
+		twoFingerTapRecognizer.numberOfTouchesRequired = 2
+        twoFingerTapRecognizer.delegate = self
+		self.scrollView.addGestureRecognizer(twoFingerTapRecognizer)
+        self.showImage(image: photoImage)
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 	}
 	
-	override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 	}
 	
 	func showImage(image:UIImage) {
-		self.imageView = UIImageView(image:nil)
+		self.imageView = UIImageView(image: image)
 		self.imageView.frame = CGRect(origin:CGPoint(x:0.0, y:0.0), size:image.size)
 		self.scrollView.addSubview(self.imageView)
 		self.scrollView.contentSize = image.size
@@ -70,8 +72,8 @@ class SinglePhotoViewController: UIViewController,UIScrollViewDelegate {
 		self.imageView.frame = contentsFrame;
 	}
 	
-	func scrollViewDoubleTapped(recognizer:UITapGestureRecognizer) {
-		let pointInView:CGPoint = recognizer.locationInView(self.imageView)
+	@objc func scrollViewDoubleTapped(recognizer:UITapGestureRecognizer) {
+        let pointInView:CGPoint = recognizer.location(in: self.imageView)
 		
 		var newZoomScale = self.scrollView.zoomScale * 1.5
 		newZoomScale = min(newZoomScale, self.scrollView.maximumZoomScale);
@@ -83,14 +85,13 @@ class SinglePhotoViewController: UIViewController,UIScrollViewDelegate {
 		let x:CGFloat = pointInView.x - (w / 2.0);
 		let y:CGFloat = pointInView.y - (h / 2.0);
 		
-		let rectToZoomTo = CGRectMake(x, y, w, h);
-		
-		self.scrollView.zoomToRect(rectToZoomTo,animated:true);
+		let rectToZoomTo = CGRect(x: x, y: y, width: w, height: h)
+        self.scrollView.zoom(to: rectToZoomTo,animated:true);
 	}
 	
-	func scrollViewTwoFingerTapped(recognizer:UITapGestureRecognizer) {
+    @objc func scrollViewTwoFingerTapped(recognizer:UITapGestureRecognizer) {
 		// Zoom out slightly, capping at the minimum zoom scale specified by the scroll view
-		var newZoomScale = self.scrollView.zoomScale / 1.5
+		var newZoomScale = 2 * self.scrollView.zoomScale
 		newZoomScale = max(newZoomScale, self.scrollView.minimumZoomScale);
 		self.scrollView.setZoomScale(newZoomScale ,animated:true);
 	}
@@ -100,16 +101,21 @@ class SinglePhotoViewController: UIViewController,UIScrollViewDelegate {
 	return self.imageView;
 	}
 	
-	func scrollViewDidZoom(scrollView: UIScrollView) {
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		self.centerScrollViewContents()
 	}
 	
     @IBAction func tapClose(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 	
 }
 
+extension SinglePhotoViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
 
 extension SinglePhotoViewController:RMPZoomTransitionAnimating, RMPZoomTransitionDelegate {
     
@@ -119,16 +125,16 @@ extension SinglePhotoViewController:RMPZoomTransitionAnimating, RMPZoomTransitio
     {
         let image = self.imageView.image
         let imageView = UIImageView(image:image)
-        imageView.contentMode = UIViewContentMode.ScaleAspectFill;
+        imageView.contentMode = UIViewContentMode.scaleAspectFill;
         imageView.clipsToBounds = true
-        imageView.userInteractionEnabled = false
+        imageView.isUserInteractionEnabled = false
         imageView.frame =  self.imageView.frame
         return imageView;
     }
     
     func transitionSourceBackgroundColor() -> UIColor!
     {
-        return UIColor.clearColor()
+        return UIColor.clear
     }
     
     func transitionDestinationImageViewFrame() -> CGRect
@@ -139,7 +145,7 @@ extension SinglePhotoViewController:RMPZoomTransitionAnimating, RMPZoomTransitio
     
     //MARK: - <RMPZoomTransitionDelegate>
     
-    func zoomTransitionAnimator(animator:RMPZoomTransitionAnimator,
+    func zoomTransitionAnimator(_ animator:RMPZoomTransitionAnimator,
                                 didCompleteTransition didComplete:Bool,
                                                       animatingSourceImageView imageView:UIImageView)
     {

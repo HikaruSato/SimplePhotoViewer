@@ -1,0 +1,6 @@
+framework module RMPZoomTransitionAnimator {
+  umbrella header "RMPZoomTransitionAnimator-umbrella.h"
+
+  export *
+  module * { export * }
+}
